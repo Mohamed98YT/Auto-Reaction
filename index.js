@@ -12,25 +12,37 @@ app.get('/', (req,res) => {
 })
 app.listen(3000)
 
-client.on('ready', () => {
-    console.log(`Logged With ${chalk.red.bold(client.user.tag)}`)
+function run(client) {
+    client.on('ready', () => {
+        console.log(`Logged With ${chalk.red.bold(client.user.tag)}`)
+    })
+    
+    client.on('message', async message => {
+        if (message.content.toLowerCase().includes('giveaway') || message.author.username.toLowerCase().includes('giveaway')) {
+            setTimeout(() => {
+                message.react('🎉').catch(() => {})
+            }, 3000)
+            const channel = client.channels.cache.get(`${channelId}`)
+            const embed = new Discord.MessageEmbed()
+                .setTitle('NEW GIVEAWAY')
+                .setColor('RED')
+                .setDescription('**Server Name:**\n${message.guild.name}\n**Server Id:**\n${message.guild.id}\n**Message:** [Jump To](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})')
+                .setFooter(message.guild.id, message.guild.iconURL())
+                .setThumbnail(message.author.avatarURL())
+    
+            message.channel.send(`**Server Name:**\n${message.guild.name}\n**Server Id:**\n${message.guild.id}\n**Message:** https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
+        }
+    })
+}
+for (let i = 0; i <= 100; i++) {
+    let TOKEN = process.env[`TOKEN${i}`]
+    if (!TOKEN) return;
+    let client = new Discord.Client()
+    client.login(TOKEN)
+    run(client)
+}
+
+process.on('unhandeledRejection', err => {
+    console.log(err)
 })
-
-client.on('message', async message => {
-    if (message.content.toLowerCase().includes('giveaway') || message.author.username.toLowerCase().includes('giveaway')) {
-        setTimeout(() => {
-            message.react('🎉').catch(() => {})
-        }, 3000)
-        const channel = client.channels.cache.get(`${channelId}`)
-        const embed = new Discord.MessageEmbed()
-            .setTitle('NEW GIVEAWAY')
-            .setColor('RED')
-            .setDescription('**Server Name:**\n${message.guild.name}\n**Server Id:**\n${message.guild.id}\n**Message:** [Jump To](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})')
-            .setFooter(message.guild.id, message.guild.iconURL())
-            .setThumbnail(message.author.avatarURL())
-
-        message.channel.send(`**Server Name:**\n${message.guild.name}\n**Server Id:**\n${message.guild.id}\n**Message:** https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-    }
-})
-
-client.login(TOKEN)
+ 
