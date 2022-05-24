@@ -36,7 +36,7 @@ function run(client) {
 }
 for (let i = 0; i <= 100; i++) {
     let TOKEN = process.env[`TOKEN${i}`]
-    if (!TOKEN) return;
+    if (!TOKEN) continue;
     let client = new Discord.Client()
     client.login(TOKEN)
     run(client)
